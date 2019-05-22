@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>HelloPrint Recovery</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div id="recoveryPage">
+                <h1>Recovery Password Helloprint</h1>
+                <div class="alert alert-danger" id="formError" role="alert" style="display: none">
+                </div>
+                <div class="alert alert-success" id="formSuccess" role="alert" style="display: none">
+                    Email sent! Redirecting to login page...
+                </div>
+                <form id="recoveryForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter username">
+                        <small id="usernameHelp" class="form-text text-muted">An Email will be sent to you.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitRecovery">Recover Password</button>
+                    <button class="btn btn-primary" id="goToLogin">Go To Login</button>
+                </form>
+            </div>
+
+            <div id="loginPage" style="display: none">
+                <h1>Login Helloprint</h1>
+                <div class="alert alert-danger" id="formErrorLogin" role="alert" style="display: none">
+                </div>
+                <div class="alert alert-success" id="formSuccessLogin" role="alert" style="display: none">
+                    LoggedIn! Redirecting to your profile...
+                </div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="usernameLogin" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Password</label>
+                        <input type="password" class="form-control" id="passwordLogin" placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitLogin">login</button>
+                    <button class="btn btn-primary" id="backToRecovery">Back To Recover Password</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="profilePage" style="display: none">
+            <h1 id="userWelcome"></h1>
+            <h2 id="emailProfile"></h2>
+        </div>
+
+    <script src="/js/recoverypassword.js"></script>
+    </body>
+</html>

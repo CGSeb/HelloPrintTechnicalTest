@@ -1,1 +1,3 @@
 /.idea/*
+dev.env
+/docker/db_helloprint/mysql/*
