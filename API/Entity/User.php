@@ -1,4 +1,5 @@
 <?php
+namespace API\Entity;
 
 class User
 {

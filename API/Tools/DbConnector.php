@@ -1,4 +1,7 @@
 <?php
+namespace API\Tools;
+
+use API\Entity\User;
 
 class DbConnector
 {
@@ -9,9 +12,9 @@ class DbConnector
 
         $dsn = "mysql:host=$host;dbname=helloprint;port=$port";
         try {
-            $this->pdo = new PDO($dsn, $user, $pass);
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
+            $this->pdo = new \PDO($dsn, $user, $pass);
+        } catch (\PDOException $e) {
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 
