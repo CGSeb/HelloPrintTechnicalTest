@@ -8,11 +8,20 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class RequestController {
 
+    /**
+     * @var string
+     */
     private $username;
+
+    /**
+     * @var DbConnector
+     */
+    private $dbConnector;
 
     public function __construct($request)
     {
         $this->username = $request['username'];
+        $this->dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
         $this->assertUserExist();
     }
 
@@ -26,9 +35,8 @@ class RequestController {
             exit();
         }
 
-        $dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
 
-        $user = $dbConnector->getUserByUsername($this->username);
+        $user = $this->dbConnector->getUserByUsername($this->username);
 
         if (!($user instanceof User)) {
             echo json_encode([
@@ -53,5 +61,10 @@ class RequestController {
         );
         $producer->publish($msg);
         $producer->close();
+
+        echo json_encode([
+            'success' => true,
+        ]);
+        exit();
     }
 }

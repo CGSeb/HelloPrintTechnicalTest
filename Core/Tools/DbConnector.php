@@ -1,7 +1,7 @@
 <?php
-namespace API\Tools;
+namespace Core\Tools;
 
-use API\Entity\User;
+use Core\Entity\User;
 
 class DbConnector
 {
@@ -9,6 +9,7 @@ class DbConnector
 
     public function __construct($host, $user, $pass, $port=3306)
     {
+
         $dsn = "mysql:host=$host;dbname=helloprint;port=$port";
         try {
             $this->pdo = new \PDO($dsn, $user, $pass);

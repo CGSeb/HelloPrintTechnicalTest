@@ -6,7 +6,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Producer {
-    const RABBITMQ_HOST         = 'helloprint-core';
+    const RABBITMQ_HOST         = 'helloprint-core-rabbit';
     const RABBITMQ_PORT         = 5672;
     const RABBITMQ_USERNAME     = 'rabbitmq';
     const RABBITMQ_PASSWORD     = 'rabbitmq';
@@ -49,6 +49,9 @@ class Producer {
         );
     }
 
+    /**
+     * @param AMQPMessage $message
+     */
     public function publish(AMQPMessage $message)
     {
         $this->channel->basic_publish($message, '', self::RABBITMQ_QUEUE_NAME);

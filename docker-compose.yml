@@ -14,18 +14,16 @@ services:
     restart: always
 
   php_website:
-    container_name: helloprintwebsite
+    container_name: helloprint-website
     build: docker/php
     volumes:
       - ./Website:/var/www/html
       - /var/log/apache2/helloprint:/var/log/apache2/
     ports:
       - '8000:80'
-    depends_on:
-      - helloprint-db
 
   php_api:
-    container_name: helloprintapi
+    container_name: helloprint-api
     build: docker/php
     volumes:
       - ./API:/var/www/html
@@ -34,18 +32,37 @@ services:
       - '8001:80'
     depends_on:
       - helloprint-db
-      - helloprint-core
+      - helloprint-core-rabbit
     external_links:
       - helloprint-db
-      - helloprint-core
+      - helloprint-core-rabbit
     links:
       - helloprint-db
-      - helloprint-core
+      - helloprint-core-rabbit
 
-  helloprint-core:
+  php_core:
     container_name: helloprint-core
-    image: "rabbitmq:3-management"
     hostname: "helloprint-core"
+    build: docker/php
+    volumes:
+      - ./Core:/var/www/html
+      - /var/log/apache2/helloprintcore:/var/log/apache2/
+    ports:
+      - '8002:80'
+    depends_on:
+      - helloprint-db
+      - helloprint-core-rabbit
+    external_links:
+      - helloprint-db
+      - helloprint-core-rabbit
+    links:
+      - helloprint-db
+      - helloprint-core-rabbit
+
+  helloprint-core-rabbit:
+    container_name: helloprint-core-rabbit
+    image: "rabbitmq:3-management"
+    hostname: "helloprint-core-rabbit"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
       RABBITMQ_DEFAULT_USER: "rabbitmq"
