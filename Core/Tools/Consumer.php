@@ -113,9 +113,9 @@ class Consumer {
         $userPasword = $user->getPassword();
 
         $message = "<h1>Hi " . $userName . "</h1><h3>Here is your Password: " . $userPasword ."</h3>";
-
         $headers = [
-            'From' => 'contact@helloprin.nl',
+            'From' => 'contact@helloprint.nl',
+            'Content-type' => 'text/html',
         ];
 
         $sent = mail($userEmail, 'Helloprint password recovery', $message, $headers);

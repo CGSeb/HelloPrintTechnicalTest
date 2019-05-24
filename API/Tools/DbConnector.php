@@ -17,11 +17,16 @@ class DbConnector
         }
     }
 
-    public function getUserByUsername($username): User
+    public function getUserByUsername($username): ?User
     {
         $statement = $this->pdo->prepare('SELECT * FROM users WHERE username=:username');
         $statement->execute([':username' => $username]);
+        $user = $statement->fetchObject(User::class);
 
-        return $statement->fetchObject(User::class);
+        if(!$user) {
+            return null;
+        }
+
+        return $user;
     }
 }

@@ -8,7 +8,7 @@ services:
     env_file:
       - ./docker/db_helloprint/dev.env
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
       - ./docker/db_helloprint/mysql:/var/lib/mysql
     restart: always
@@ -20,7 +20,7 @@ services:
       - ./Website:/var/www/html
       - /var/log/apache2/helloprint:/var/log/apache2/
     ports:
-      - '8000:80'
+      - 8000:80
 
   php_api:
     container_name: helloprint-api
@@ -42,13 +42,13 @@ services:
 
   php_core:
     container_name: helloprint-core
-    hostname: "helloprint-core"
-    build: docker/php
+    hostname: helloprint-core
+    build: docker/php_core
     volumes:
       - ./Core:/var/www/html
       - /var/log/apache2/helloprintcore:/var/log/apache2/
     ports:
-      - '8002:80'
+      - 8002:80
     depends_on:
       - helloprint-db
       - helloprint-core-rabbit
@@ -61,19 +61,19 @@ services:
 
   helloprint-core-rabbit:
     container_name: helloprint-core-rabbit
-    image: "rabbitmq:3-management"
-    hostname: "helloprint-core-rabbit"
+    image: rabbitmq:3-management
+    hostname: helloprint-core-rabbit
     environment:
-      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
-      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_ERLANG_COOKIE: SWQOKODSQALRPCLNMEQG
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - 15672:15672
+      - 5672:5672
     labels:
-      NAME: "rabbitmq1"
+      NAME: rabbitmq1
     volumes:
-      - "./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
     depends_on:
       - php_website
