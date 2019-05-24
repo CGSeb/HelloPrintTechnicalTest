@@ -6,19 +6,19 @@ services:
     image: mysql:5.6.27
     container_name: helloprint-db
     env_file:
-      - docker/db_helloprint/dev.env
+      - ./docker/db_helloprint/dev.env
     ports:
       - 3306:3306
     volumes:
-      - docker/db_helloprint/mysql:/var/lib/mysql
-      - docker/db_helloprint/helloprint.sql:/docker-entrypoint-initdb.d/helloprint.sql
+      - ./docker/db_helloprint/mysql:/var/lib/mysql
+      - ./docker/db_helloprint/helloprint.sql:/docker-entrypoint-initdb.d/helloprint.sql
     restart: always
 
   php_website:
     container_name: helloprint-website
     build: docker/php
     volumes:
-      - Website:/var/www/html
+      - ./Website:/var/www/html
       - /var/log/apache2/helloprint:/var/log/apache2/
     ports:
       - 8000:80
@@ -27,7 +27,7 @@ services:
     container_name: helloprint-api
     build: docker/php
     volumes:
-      - API:/var/www/html
+      - ./API:/var/www/html
       - /var/log/apache2/helloprintapi:/var/log/apache2/
     ports:
       - '8001:80'
@@ -46,7 +46,7 @@ services:
     hostname: helloprint-core
     build: docker/php_core
     volumes:
-      - Core:/var/www/html
+      - ./Core:/var/www/html
       - /var/log/apache2/helloprintcore:/var/log/apache2/
     ports:
       - 8002:80
@@ -75,6 +75,6 @@ services:
     labels:
       NAME: rabbitmq1
     volumes:
-      - enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
     depends_on:
       - php_website
