@@ -6,7 +6,8 @@ services:
     image: mysql:5.6.27
     container_name: helloprint-db
     env_file:
-      - ./docker/db_helloprint/dev.env
+      - docker/db_helloprint/dev.env
+      - docker/db_helloprint/helloprint.sql:/docker-entrypoint-initdb.d/helloprint.sql
     ports:
       - 3306:3306
     volumes:

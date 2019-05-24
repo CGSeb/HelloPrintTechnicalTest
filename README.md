@@ -32,9 +32,13 @@ and add the following lines
 ```
 **Note:** In the following guide we assume you already installed Docker on your machine.
 
+To build the environment, execute this command
+```bash
+./buildenv.sh
+```
 <br>
 
-##Website
+## Website
 Website application is the login interface.
 In order to start the application, execute this command in the **root** directory (this will start also API application)
 ```bash
@@ -44,7 +48,7 @@ After few moment, the interface will be available at the address: http://hellopr
 
 <br>
 
-##RabbitMQ
+## RabbitMQ
 For the queuing system, RabbitMQ will be used.
 <br>
 
