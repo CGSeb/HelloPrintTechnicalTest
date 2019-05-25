@@ -1,21 +1,21 @@
-version: '2'
+version: '3.3'
 
 services:
 
   helloprint-db:
-    build: docker/db_helloprint
+    image: mysql:5.7
     container_name: helloprint-db
     env_file:
       - ./docker/db_helloprint/dev.env
     ports:
       - 3306:3306
     volumes:
-      - ./docker/db_helloprint/mysql:/var/lib/mysql
-      - ./docker/db_helloprint/helloprint.sql:/docker-entrypoint-initdb.d/helloprint.sql
+      - ./docker/db_helloprint/sqls/helloprint.sql:/docker-entrypoint-initdb.d/helloprint.sql
+    restart: always
 
   php_website:
     container_name: helloprint-website
-    build: docker/php
+    build: ./docker/php
     volumes:
       - ./Website:/var/www/html
       - /var/log/apache2/helloprint:/var/log/apache2/
@@ -24,7 +24,7 @@ services:
 
   php_api:
     container_name: helloprint-api
-    build: docker/php
+    build: ./docker/php
     volumes:
       - ./API:/var/www/html
       - /var/log/apache2/helloprintapi:/var/log/apache2/
@@ -43,7 +43,7 @@ services:
   php_core:
     container_name: helloprint-core
     hostname: helloprint-core
-    build: docker/php_core
+    build: ./docker/php_core
     volumes:
       - ./Core:/var/www/html
       - /var/log/apache2/helloprintcore:/var/log/apache2/
