@@ -38,12 +38,19 @@ To build the environment, execute this command
 ```
 <br>
 
-## Website
-Website application is the login interface.
-In order to start the application, execute this command in the **root** directory (this will start also API application)
+## Start the applications
+
+To start the environment, run this command in the root file
+
 ```bash
 ./start.sh
 ```
+
+<br>
+
+## Website
+Website application is the login interface.
+
 After few moment, the interface will be available at the address: http://helloprint.test:8000/
 
 <br>
@@ -52,22 +59,21 @@ After few moment, the interface will be available at the address: http://hellopr
 For the queuing system, RabbitMQ will be used.
 <br>
 
-First move to the **Core** directory and execute this command
 
-```bash 
-chmod 777 start.sh
-```
-
-Then start the RabbitMQ with this command (Still in the directory **Core**)
-
-```bash
-./start.sh
-```
-
-**Note:** Wait a minute or two then you can go to http://core.helloprint.test:8080 and use the credentials: 
-* Login: guest
-* Password: guest
+**Note:** Wait a minute or two then you can go to http://core.helloprint.test:15672 and use the credentials: 
+* Login: rabbitmq
+* Password: rabbitmq
 
 (You can change the password or create new users in the table **Admin**)
 
 <br>
+
+## Consumer
+Even if you executed the **./start.sh** script the consumer is not started. This means that the recovery password requests will stay in the queue (can be seen http://core.helloprint.test:15672 tab Overview) 
+
+To start the consumer run
+```bash
+./startconsumer.sh
+```
+
+**Note:** The emails can take times to arrive in your mailbox, check also the spam. 
