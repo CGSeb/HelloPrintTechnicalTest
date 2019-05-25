@@ -3,15 +3,23 @@ namespace API;
 
 use API\Entity\User;
 use API\Tools\DbConnector;
-use API\Tools\Producer;
-use PhpAmqpLib\Message\AMQPMessage;
 
-class RequestController {
+class LoginController {
 
     /**
      * @var string
      */
     private $username;
+
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @ User
+     */
+    private $user;
 
     /**
      * @var DbConnector
@@ -21,6 +29,7 @@ class RequestController {
     public function __construct($request)
     {
         $this->username = $request['username'];
+        $this->password = $request['password'];
         $this->dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
         $this->assertUserExist();
     }
@@ -35,34 +44,39 @@ class RequestController {
             exit();
         }
 
-        $user = $this->dbConnector->getUserByUsername($this->username);
+        if (!$this->password) {
+            echo json_encode([
+                'success' => false,
+                'message' => "Password must be set!",
+            ]);
+            exit();
+        }
 
-        if (!($user instanceof User)) {
+        $this->user = $this->dbConnector->getUserByUsername($this->username);
+
+        if (!($this->user instanceof User)) {
             echo json_encode([
                 'success' => false,
                 'message' => "This username doesn't exist!",
             ]);
             exit();
         }
+
+        if ($this->user->getPassword() !== $this->password) {
+            echo json_encode([
+                'success' => false,
+                'message' => "Wrong credentials!",
+            ]);
+            exit();
+        }
     }
 
-    public function sendEmail(){
-        $message = [
-            "Type" => "PasswordRecovery",
-            "username" => $this->username,
-        ];
-        $rabbitMessage = json_encode($message);
-        $producer = new Producer();
-
-        $msg = new AMQPMessage(
-            $rabbitMessage,
-            array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
-        );
-        $producer->publish($msg);
-        $producer->close();
-
+    public function login()
+    {
         echo json_encode([
             'success' => true,
+            'username' => $this->user->getUsername(),
+            'email' => $this->user->getEmail(),
         ]);
         exit();
     }

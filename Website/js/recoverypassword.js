@@ -46,7 +46,7 @@ $('#loginForm').submit(function (event) {
   event.preventDefault();
   var username = $('#usernameLogin').val();
   var password = $('#passwordLogin').val();
-  var apiUrl = "http://api.helloprint.test:8888/login";
+  var apiUrl = "http://api.helloprint.test:8001/login.php";
   var submitBtn = $('#submitLogin');
   var formError = $('#formErrorLogin');
   var formSuccess = $('#formSuccessLogin');
@@ -80,6 +80,7 @@ $('#loginForm').submit(function (event) {
             profilePage.show();
             $('#usernameLogin').val('');
             $('#passwordLogin').val('');
+            formSuccess.hide();
           }, 2000);
       }
     });
@@ -95,7 +96,16 @@ $('#backToRecovery').click(function (event) {
 
 $('#goToLogin').click(function (event) {
   event.preventDefault();
+  goToLogin();
+});
+
+$('#logout').click(function (event) {
+  event.preventDefault();
+  goToLogin();
+});
+
+function goToLogin() {
   loginPage.show();
   profilePage.hide();
   recoveryPage.hide();
-});
+}
