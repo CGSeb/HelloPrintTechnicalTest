@@ -76,4 +76,11 @@ To start the consumer run
 ./startconsumer.sh
 ```
 
+To stop the consumer, press **CTRL + C**
+To stop all the components, execute the command
+
+```bash
+./stop.sh
+```
+
 **Note:** The emails can take times to arrive in your mailbox, check also the spam. 
