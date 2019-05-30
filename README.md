@@ -69,14 +69,20 @@ For the queuing system, RabbitMQ will be used.
 <br>
 
 ## Consumer
-Even if you executed the **./start.sh** script the consumer is not started. This means that the recovery password requests will stay in the queue (can be seen http://core.helloprint.test:15672 tab Overview) 
+Even if you executed the **./start.sh** script the consumers are not started. This means that the login and recovery password requests will stay in the queues (can be seen http://core.helloprint.test:15672 tab Overview) 
 
-To start the consumer run
+To start the **login** consumer run
 ```bash
-./startconsumer.sh
+./startloginconsumer.sh
+```
+
+To start the **email** consumer run in a separate terminal
+```bash
+./startemailconsumer.sh
 ```
 
 To stop the consumer, press **CTRL + C**
+
 To stop all the components, execute the command
 
 ```bash

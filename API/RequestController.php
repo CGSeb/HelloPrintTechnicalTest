@@ -1,9 +1,7 @@
 <?php
 namespace API;
 
-use API\Entity\User;
-use API\Tools\DbConnector;
-use API\Tools\Producer;
+use API\Tools\RecoveryProducer;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class RequestController {
@@ -13,15 +11,9 @@ class RequestController {
      */
     private $username;
 
-    /**
-     * @var DbConnector
-     */
-    private $dbConnector;
-
     public function __construct($request)
     {
         $this->username = $request['username'];
-        $this->dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
         $this->assertUserExist();
     }
 
@@ -34,16 +26,6 @@ class RequestController {
             ]);
             exit();
         }
-
-        $user = $this->dbConnector->getUserByUsername($this->username);
-
-        if (!($user instanceof User)) {
-            echo json_encode([
-                'success' => false,
-                'message' => "This username doesn't exist!",
-            ]);
-            exit();
-        }
     }
 
     public function sendEmail(){
@@ -52,14 +34,14 @@ class RequestController {
             "username" => $this->username,
         ];
         $rabbitMessage = json_encode($message);
-        $producer = new Producer();
+        $producer = new RecoveryProducer();
 
         $msg = new AMQPMessage(
             $rabbitMessage,
             array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
         );
         $producer->publish($msg);
-        $producer->close();
+        $producer->closeQueue();
 
         echo json_encode([
             'success' => true,

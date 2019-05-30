@@ -2,25 +2,8 @@
 namespace Core\Tools;
 
 use Core\Entity\User;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-class Consumer {
-    const RABBITMQ_HOST         = 'helloprint-core-rabbit';
-    const RABBITMQ_PORT         = 5672;
-    const RABBITMQ_USERNAME     = 'rabbitmq';
-    const RABBITMQ_PASSWORD     = 'rabbitmq';
-    const RABBITMQ_QUEUE_NAME   = 'helloprint-recovery';
-
-    /**
-     * @var AMQPStreamConnection
-     */
-    private $connection;
-
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
+class EmailConsumer extends AbstractQueue {
 
     /**
      * @var DbConnector
@@ -29,13 +12,7 @@ class Consumer {
 
     public function __construct()
     {
-        $this->connection = new AMQPStreamConnection(
-            self::RABBITMQ_HOST,
-            self::RABBITMQ_PORT,
-            self::RABBITMQ_USERNAME,
-            self::RABBITMQ_PASSWORD
-        );
-
+        parent::__construct();
         $this->initChannel();
         $this->dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
     }
@@ -44,7 +21,7 @@ class Consumer {
     {
         $this->channel = $this->connection->channel();
         $this->channel->queue_declare(
-            $queue = self::RABBITMQ_QUEUE_NAME,
+            $queue = self::RABBITMQ_RECOVERY_QUEUE,
             $passive = false,
             $durable = true,
             $exclusive = false,
@@ -77,7 +54,7 @@ class Consumer {
         $this->channel->basic_qos(null, 1, null);
 
         $this->channel->basic_consume(
-            $queue = self::RABBITMQ_QUEUE_NAME,
+            $queue = self::RABBITMQ_RECOVERY_QUEUE,
             $consumer_tag = '',
             $no_local = false,
             $no_ack = false,
@@ -91,13 +68,8 @@ class Consumer {
             $this->channel->wait();
         }
 
-        $this->close();
-    }
-
-    public function close()
-    {
-        $this->channel->close();
-        $this->connection->close();
+        $this->dbConnector->close();
+        $this->closeQueue();
     }
 
     public function sendPasswordRecovery($response)

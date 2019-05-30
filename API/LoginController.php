@@ -1,8 +1,8 @@
 <?php
 namespace API;
 
-use API\Entity\User;
-use API\Tools\DbConnector;
+use API\Tools\LoginProducer;
+use Ramsey\Uuid\Uuid;
 
 class LoginController {
 
@@ -17,24 +17,30 @@ class LoginController {
     private $password;
 
     /**
-     * @ User
+     * @var LoginProducer
      */
-    private $user;
+    private $loginProducer;
+
+    public function __construct()
+    {
+        $this->loginProducer = new LoginProducer();
+    }
 
     /**
-     * @var DbConnector
+     * @param array $request
      */
-    private $dbConnector;
-
-    public function __construct($request)
+    public function sendLoginRequest($request)
     {
         $this->username = $request['username'];
         $this->password = $request['password'];
-        $this->dbConnector = new DbConnector('helloprint-db', 'root', 'root', 3306);
-        $this->assertUserExist();
+        $this->assertValidRequest();
+
+        $loginUuid = Uuid::uuid4()->toString();
+        $this->loginProducer->publish($this->username, $this->password, $loginUuid);
+        $this->loginProducer->close();
     }
 
-    private function assertUserExist()
+    private function assertValidRequest()
     {
         if (!$this->username) {
             echo json_encode([
@@ -51,33 +57,5 @@ class LoginController {
             ]);
             exit();
         }
-
-        $this->user = $this->dbConnector->getUserByUsername($this->username);
-
-        if (!($this->user instanceof User)) {
-            echo json_encode([
-                'success' => false,
-                'message' => "This username doesn't exist!",
-            ]);
-            exit();
-        }
-
-        if ($this->user->getPassword() !== $this->password) {
-            echo json_encode([
-                'success' => false,
-                'message' => "Wrong credentials!",
-            ]);
-            exit();
-        }
-    }
-
-    public function login()
-    {
-        echo json_encode([
-            'success' => true,
-            'username' => $this->user->getUsername(),
-            'email' => $this->user->getEmail(),
-        ]);
-        exit();
     }
 }

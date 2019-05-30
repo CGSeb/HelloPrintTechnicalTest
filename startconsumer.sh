@@ -1,1 +1,0 @@
-docker exec helloprint-core php emailConsumer.php

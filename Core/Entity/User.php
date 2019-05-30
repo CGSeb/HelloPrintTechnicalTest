@@ -3,15 +3,29 @@ namespace Core\Entity;
 
 class User
 {
-
+    /**
+     * @var int
+     */
     private $id;
 
+    /**
+     * @var string
+     */
     private $username;
 
+    /**
+     * @var string
+     */
     private $email;
 
+    /**
+     * @var string
+     */
     private $password;
 
+    /**
+     * @var int
+     */
     private $status;
 
     public function getId(): ?int
@@ -60,7 +74,7 @@ class User
         return $this->status;
     }
 
-    public function setStatus(bool $status): self
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 

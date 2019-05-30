@@ -8,8 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Access-Control-Allow-Origin: *");
 
     $request = json_decode(file_get_contents('php://input'), true);
-    $loginController = new LoginController($request);
-    $loginController->login();
+    $loginController = new LoginController();
+    $loginController->sendLoginRequest($request);
 }else{ ?>
     <h1>Wrong method!</h1>
 <?php } ?>

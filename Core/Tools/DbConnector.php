@@ -23,11 +23,17 @@ class DbConnector
         $statement = $this->pdo->prepare('SELECT * FROM users WHERE username=:username');
         $statement->execute([':username' => $username]);
         $user = $statement->fetchObject(User::class);
+        $statement = null;
 
         if(!$user) {
             return null;
         }
 
         return $user;
+    }
+
+    public function close()
+    {
+        $this->pdo = null;
     }
 }

@@ -1,5 +1,6 @@
 {
   "require": {
-    "php-amqplib/php-amqplib": ">=v2.8.2-rc3"
+    "php-amqplib/php-amqplib": ">=v2.8.2-rc3",
+    "ramsey/uuid": "^3.8"
   }
 }
