@@ -8,8 +8,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Access-Control-Allow-Origin: *");
 
     $request = json_decode(file_get_contents('php://input'), true);
-    $loginController = new LoginController();
-    $loginController->sendLoginRequest($request);
+
+    try {
+        $loginController = new LoginController();
+        $loginController->sendLoginRequest($request);
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error while trying to login!',
+        ]);
+        exit();
+    }
 }else{ ?>
     <h1>Wrong method!</h1>
 <?php } ?>

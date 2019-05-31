@@ -28,8 +28,7 @@ class LoginConsumer extends AbstractQueue {
             $request = json_decode($body, true);
             $username = $request['username'];
             $password = $request['password'];
-
-
+            sleep(rand(1, 6));
             $msg = new AMQPMessage(
                 (string) $this->authenticateUser($username, $password),
                 [

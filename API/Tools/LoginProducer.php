@@ -2,9 +2,13 @@
 namespace API\Tools;
 
 use PhpAmqpLib\Message\AMQPMessage;
+use Ramsey\Uuid\Uuid;
 
 class LoginProducer extends AbstractQueue {
 
+    /**
+     * @var string
+     */
     private $callbackQueue;
 
     /**
@@ -17,54 +21,58 @@ class LoginProducer extends AbstractQueue {
      */
     private $hasResponded;
 
-    public function __construct()
+    public function __construct($getResponse = [])
     {
         parent::__construct();
-
         $this->channel = $this->connection->channel();
-        list($this->callbackQueue, ,) = $this->channel->queue_declare(
-            "",
-            false,
-            false,
-            true,
-            false
-        );
 
-        $this->channel->basic_consume(
-            $this->callbackQueue,
-            '',
-            false,
-            true,
-            false,
-            false,
-            array(
-                $this,
-                'onResponse'
-            )
-        );
-    }
-
-    public function onResponse($rep)
-    {
-        if ($rep->get('correlation_id') == $this->corrId) {
-            $response = json_decode($rep->body, true);
-            $this->hasResponded = true;
-            $this->closeQueue();
-            $this->getLoginResponse($response);
+        if (!isset($getResponse['request-id']) && !isset($getResponse['queue'])) {
+            $this->callbackQueue = Uuid::uuid4();
+            $this->channel->queue_declare(
+                $this->callbackQueue,
+                false,
+                false,
+                false,
+                false,
+                false
+            );
+        } else {
+            $this->corrId = $getResponse['request-id'];
+            $this->callbackQueue = $getResponse['queue'];
+            $this->hasResponded = false;
+            $this->channel->queue_declare($this->callbackQueue, false, false, false, false);
         }
     }
 
-
-    public function publish($username, $password, $loginUuid)
+    public function publish($username, $password, $loginUuid): string
     {
         $this->corrId = $loginUuid;
         $this->hasResponded = false;
         $msg = $this->createRabbitMessage($username, $password);
-
         $this->channel->basic_publish($msg, '', self::RABBITMQ_LOGIN_QUEUE);
 
-        while (!$this->hasResponded) {
-            $this->channel->wait();
+        return $this->callbackQueue;
+    }
+
+    public function consume()
+    {
+        $onResponse = function ($rep) {
+            if ($rep->get('correlation_id') == $this->corrId) {
+                $response = json_decode($rep->body, true);
+                $this->hasResponded = true;
+                $this->getLoginResponse($response);
+            }
+        };
+        $this->channel->basic_qos(null, 1, null);
+        $this->channel->basic_consume($this->callbackQueue, '', false, false, false, false, $onResponse);
+        try {
+            $this->channel->wait(null, false,1);
+        } catch (\Exception $exception) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'pending',
+            ]);
+            exit();
         }
     }
 
@@ -98,11 +106,15 @@ class LoginProducer extends AbstractQueue {
         $userName = $response['username'];
         $email = $response['email'];
         $error = $response['error'] ?? '';
+        $this->channel->queue_delete($this->callbackQueue);
+        $this->closeQueue();
 
         if ($error !== '') {
             echo json_encode([
                 'success' => false,
                 'message' => $error,
+                'request-id' => $this->corrId,
+                'queue' => $this->callbackQueue,
             ]);
             exit();
         }
@@ -111,6 +123,8 @@ class LoginProducer extends AbstractQueue {
             'success' => true,
             'username' => $userName,
             'email' => $email,
+            'request-id' => '',
+            'queue' => '',
         ]);
         exit();
 

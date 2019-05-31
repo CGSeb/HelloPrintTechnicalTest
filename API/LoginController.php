@@ -21,23 +21,30 @@ class LoginController {
      */
     private $loginProducer;
 
-    public function __construct()
-    {
-        $this->loginProducer = new LoginProducer();
-    }
-
     /**
      * @param array $request
      */
     public function sendLoginRequest($request)
     {
-        $this->username = $request['username'];
-        $this->password = $request['password'];
-        $this->assertValidRequest();
+        if ($request['queue'] != '' && $request['request-id'] != '') {
+            $this->loginProducer = new LoginProducer($request);
+            $this->loginProducer->consume();
+        } else {
+            $this->loginProducer = new LoginProducer();
+            $loginUuid = Uuid::uuid4()->toString();
+            $this->username = $request['username'];
+            $this->password = $request['password'];
+            $this->assertValidRequest();
 
-        $loginUuid = Uuid::uuid4()->toString();
-        $this->loginProducer->publish($this->username, $this->password, $loginUuid);
-        $this->loginProducer->close();
+            $queueName = $this->loginProducer->publish($this->username, $this->password, $loginUuid);
+            $this->loginProducer->closeQueue();
+            echo json_encode([
+                'success' => true,
+                'request-id' => $loginUuid,
+                'queue' => $queueName,
+            ]);
+            exit();
+        }
     }
 
     private function assertValidRequest()
